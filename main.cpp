@@ -9,10 +9,11 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <memory>
 
 #include <exception>
 
-std::vector<std::string>& loadDictionary() ;
+std::shared_ptr<std::vector<std::string>> loadDictionary() ;
 
 void playGame(std::vector<std::string>& vectorDictionary) ;
 
@@ -121,10 +122,13 @@ struct Prompt<char> : public Prompt_generic<char> {
 int main() {
 
   try {
-    std::vector<std::string>& vectorDictionary = loadDictionary() ;
+
+    auto pVectorDictionary = loadDictionary() ;
+
+    std::vector<std::string>& vectorDictionary = *pVectorDictionary ;
 
 
-    /* Test whether dicitonary has been loaded successfuly
+    /* Test whether dictionary has been loaded successfully
     for ( auto line : vectorDictionary) {
       std::cout << line << std::endl ;
     }
@@ -143,13 +147,14 @@ int main() {
   return 0 ;
 }
 
-std::vector<std::string>& loadDictionary() {
+std::shared_ptr<std::vector<std::string>> loadDictionary() {
   
   std::ifstream fileDictionary("dictionary.txt", std::ios::in) ;
   std::string line ;
 
-  std::vector<std::string> * vectorDictionary = new std::vector<std::string> ;
 
+  auto vectorDictionary = std::make_shared<std::vector<std::string>>() ;
+  
   // Save content of file seperated by '\r' to vector, one unit at a time
   if (fileDictionary.is_open()) {
     while ( getline(fileDictionary, line)) {
@@ -163,7 +168,7 @@ std::vector<std::string>& loadDictionary() {
 
   fileDictionary.close() ;
 
-  return *vectorDictionary ;
+  return vectorDictionary ;
 }
 
 void playGame(std::vector<std::string>& vectorDictionary) {
@@ -240,24 +245,30 @@ void playGame(std::vector<std::string>& vectorDictionary) {
   }
 }
 
+template <typename T>
+T promptUser(const char * promptString) {
+  return **std::make_shared<Prompt<T>>(promptString) ;
+}
+
 unsigned int askUserForWordLength() {
-  return **(new Prompt<unsigned int>("How long should the mystery word be? ")) ;
+  return promptUser<unsigned int>("How long should the mystery word be? ") ;
+  //return **std::make_shared<Prompt<unsigned int>>("How long should the mystery word be? ") ;
 }
 
 unsigned int askUserForMaxGuesses() {
-  return **(new Prompt<unsigned int>("How many guesses would you like to have? ")) ;
+  return promptUser<unsigned int>("How many guesses would you like to have? ") ;
 }  
 
 bool askUserIfTheyWantToCheat() {
-  return **(new Prompt<bool>("Do you want to cheat? ")) ;
+  return promptUser<bool>("Do you want to cheat? ") ;
 }
 
 bool askIfUserWantsToPlayAgain() {
-  return **(new Prompt<bool>("Do you want to play again? ")) ;
+  return promptUser<bool>("Do you want to play again? ") ;
 }
 
 char askUserForGuess() {
-  return **(new Prompt<char>("Guess a letter ")) ;
+  return promptUser<char>("Guess a letter ") ;
 }
 
 bool checkGuess(char currentGuess, std::vector<std::string>& vectorDictionaryPartition, std::string& stringGameKey, bool userWantsToCheat) {
