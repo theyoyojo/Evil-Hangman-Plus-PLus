@@ -1,5 +1,4 @@
 // Evil Hangman Plus Plus
-//
 // By Joel Savitz
 
 #include <iostream>
@@ -126,14 +125,6 @@ int main() {
     auto pVectorDictionary = loadDictionary() ;
 
     std::vector<std::string>& vectorDictionary = *pVectorDictionary ;
-
-
-    /* Test whether dictionary has been loaded successfully
-    for ( auto line : vectorDictionary) {
-      std::cout << line << std::endl ;
-    }
-    */
-  
     
     playGame(vectorDictionary) ;
     
@@ -252,7 +243,6 @@ T promptUser(const char * promptString) {
 
 unsigned int askUserForWordLength() {
   return promptUser<unsigned int>("How long should the mystery word be? ") ;
-  //return **std::make_shared<Prompt<unsigned int>>("How long should the mystery word be? ") ;
 }
 
 unsigned int askUserForMaxGuesses() {
