@@ -1,4 +1,4 @@
 all :
-	g++ -g --std=c++17 main.cpp -o evil
+	g++ -g --std=c++11 evil.cpp -o evil
 clean:
 	rm evil
